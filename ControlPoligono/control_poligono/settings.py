@@ -97,8 +97,8 @@ DATABASES = {
         'NAME': config('DB_NAME'),
         'USER': config('DB_USER'),
         'PASSWORD': config('DB_PASSWORD'),
-        'HOST': config('DB_HOST'),  # O la dirección IP de tu servidor PostgreSQL
-        'PORT': config('DB_PORT', default='5432'),  # O el puerto que estés usando
+        'HOST': config('DB_HOST'),  # 
+        'PORT': config('DB_PORT', default='5432'),
     }
 }
 
@@ -150,17 +150,18 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
-        'rest_framework.renderers.BrowsableAPIRenderer',  # Permite la interfaz web de formularios
+        'rest_framework.renderers.BrowsableAPIRenderer',  # Permite interfaz web de formularios
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
     ],
 }
 
+#Direcciones de donde vienen las peticiones (frontend)
 CORS_ALLOWED_ORIGINS = [
     "http://192.168.1.86:5173",
     "http://localhost:5173",
-    "http://127.0.0.1:5173"# Cambia según tu puerto y dominio del frontend
+    "http://127.0.0.1:5173"
 ]
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
