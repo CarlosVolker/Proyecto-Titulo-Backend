@@ -1,61 +1,64 @@
 from rest_framework import serializers
-from .models import Usuario, Tirador, Arma, TiradorArma, PoligonoTiro, LeccionTiro, FraccionTiro, Carril, ResultadoTiro
+from django.contrib.auth import authenticate
+from .models import (Usuario,
+                     Arma,
+                     PoligonoTiro,
+                     LeccionTiro,
+                     FraccionTiro,
+                     ResultadoTiro)
 
-# Serializer para Usuario
 class UsuarioSerializer(serializers.ModelSerializer):
-    grado = serializers.SerializerMethodField()
     class Meta:
         model = Usuario
-        fields = ['id', 'username', 'nombre', 'apellido_paterno','apellido_materno', 'rut','correo', 'rol', 'unidad_regimental', 'unidad_combate', 'unidad_fundamental', 'grado']
-        
-    def get_grado(self, obj):
-        return obj.perfil_tirador.grado if hasattr(obj, 'perfil_tirador') else None
-
-
-# Serializer para Tirador
-class TiradorSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Tirador
-        fields = ['id_tirador','grado' ]
-
-# Serializer para Arma
+        fields = ('id_usuario','rut', 'grado', 'nombre', 'apellido_paterno', 'apellido_materno', 'unidad_regimentaria', 'unidad_combate', 'unidad_fundamental','correo', 'rol')
+    
 class ArmaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Arma
-        fields = ['id_arma', 'tipo_arma', 'modelo_arma', 'numero_serie']
+        fields = ('id_arma', 'tipo_arma', 'modelo_arma', 'numero_serie')
 
-# Serializer para TiradorArma
-class TiradorArmaSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TiradorArma
-        fields = ['id_arma', 'id_tirador']
-
-# Serializer para PoligonoTiro
 class PoligonoTiroSerializer(serializers.ModelSerializer):
     class Meta:
         model = PoligonoTiro
-        fields = ['id_poligono', 'nombre', 'ciudad', 'carriles_maximos', 'distancia_maxima']
-
-# Serializer para LeccionTiro
+        fields = ('id_poligono', 'nombre', 'ciudad', 'carriles_maximos', 'distancia_maxima')
+        
 class LeccionTiroSerializer(serializers.ModelSerializer):
     class Meta:
         model = LeccionTiro
-        fields = ['id_leccion', 'id_poligono', 'fecha_tiro', 'numero_orden', 'fecha_orden', 'tipo_tiro', 'cant_tiros_cereo', 'cant_tiros_leccion', 'distancia']
-
-# Serializer para FraccionTiro
+        fields = ('id_leccion', 'id_poligono', 'fecha_tiro', 'numero_orden','fecha_orden', 'tipo_tiro', 'cant_tiros_cereo', 'cant_tiros_leccion', 'distancia')
+         
 class FraccionTiroSerializer(serializers.ModelSerializer):
+    id_leccion = serializers.PrimaryKeyRelatedField(queryset=LeccionTiro.objects.all())
+    
     class Meta:
         model = FraccionTiro
-        fields = ['id_fraccion', 'id_leccion', 'numero_fraccion']
-
-# Serializer para Carril
-class CarrilSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Carril
-        fields = ['id_carril', 'id_fraccion', 'id_tirador', 'id_arma', 'numero_carril']
-
-# Serializer para ResultadoTiro
+        fields = ('id_fraccion', 'id_leccion', 'tiradores_totales')
+        
+        
 class ResultadoTiroSerializer(serializers.ModelSerializer):
     class Meta:
         model = ResultadoTiro
-        fields = ['id_resultado', 'id_carril', 'id_tirador', 'id_arma', 'tiros_acertados', 'total_tiros']
+        fields = ('id_resultado', 'id_fraccion', 'id_usuario', 'id_arma', 'tiros_acertados', 'total_tiros', 'numero_carril')
+        
+        
+ 
+class RUTAuthTokenSerializer(serializers.Serializer):
+    rut = serializers.CharField()
+    password = serializers.CharField()
+
+    def validate(self, attrs):
+        rut = attrs.get('rut')
+        password = attrs.get('password')
+
+        if rut and password:
+            user = authenticate(request=self.context.get('request'), rut=rut, password=password)
+
+            if not user:
+                msg = 'Unable to log in with provided credentials.'
+                raise serializers.ValidationError(msg, code='authorization')
+        else:
+            msg = 'Must include "rut" and "password".'
+            raise serializers.ValidationError(msg, code='authorization')
+
+        attrs['user'] = user
+        return attrs
