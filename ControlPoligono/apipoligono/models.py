@@ -1,3 +1,5 @@
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
@@ -77,11 +79,14 @@ class FraccionTiro(models.Model):
     id_fraccion = models.AutoField(primary_key=True)
     id_leccion = models.ForeignKey(LeccionTiro, on_delete=models.CASCADE)
     tiradores_totales = models.IntegerField()
+    numero_fraccion = models.IntegerField()
     
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['id_leccion', 'tiradores_totales'], name='unique_leccion_tiradores')
+            models.UniqueConstraint(fields=['id_leccion', 'tiradores_totales'], name='unique_leccion_tiradores'),
+            models.UniqueConstraint(fields=['id_leccion', 'numero_fraccion'], name='unique_leccion_numero_fraccion')
         ]
+        
         
     def __str__(self):
         return f"Lección: {self.id_leccion.id_leccion} - Cantidad Tiradores: {self.tiradores_totales}"

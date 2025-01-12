@@ -11,6 +11,11 @@ class UsuarioSerializer(serializers.ModelSerializer):
     class Meta:
         model = Usuario
         fields = ('id_usuario','rut', 'grado', 'nombre', 'apellido_paterno', 'apellido_materno', 'unidad_regimentaria', 'unidad_combate', 'unidad_fundamental','correo', 'rol')
+
+    def create(self, validated_data):
+        # Asignar rut como username
+        validated_data['username'] = validated_data['rut']
+        return super().create(validated_data)
     
 class ArmaSerializer(serializers.ModelSerializer):
     class Meta:
@@ -32,16 +37,13 @@ class FraccionTiroSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = FraccionTiro
-        fields = ('id_fraccion', 'id_leccion', 'tiradores_totales')
-        
-        
+        fields = ('id_fraccion', 'id_leccion', 'tiradores_totales', 'numero_fraccion')
+               
 class ResultadoTiroSerializer(serializers.ModelSerializer):
     class Meta:
         model = ResultadoTiro
         fields = ('id_resultado', 'id_fraccion', 'id_usuario', 'id_arma', 'tiros_acertados', 'total_tiros', 'numero_carril')
         
-        
- 
 class RUTAuthTokenSerializer(serializers.Serializer):
     rut = serializers.CharField()
     password = serializers.CharField()
