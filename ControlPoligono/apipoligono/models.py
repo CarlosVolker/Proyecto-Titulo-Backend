@@ -2,6 +2,9 @@ from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.contrib.auth import get_user_model
+from django.utils import timezone
+from datetime import timedelta
 
 # Extensión del modelo de Usuario de Django
 class Usuario(AbstractUser):
@@ -83,7 +86,7 @@ class FraccionTiro(models.Model):
     
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['id_leccion', 'tiradores_totales'], name='unique_leccion_tiradores'),
+            #models.UniqueConstraint(fields=['id_leccion', 'tiradores_totales'], name='unique_leccion_tiradores'),
             models.UniqueConstraint(fields=['id_leccion', 'numero_fraccion'], name='unique_leccion_numero_fraccion')
         ]
         
@@ -100,3 +103,17 @@ class ResultadoTiro(models.Model):
     tiros_acertados = models.IntegerField()
     total_tiros = models.IntegerField()
     numero_carril = models.IntegerField(null=True, blank=True)
+
+
+Usuario = get_user_model()
+# Tabla para recuperar contraseña
+class CodigoRecuperacion(models.Model):
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    codigo = models.CharField(max_length=6)
+    creado_en = models.DateTimeField(auto_now_add=True)
+    
+    #Esta funcion verifica si el código de recuperación ha expirado
+    def esta_expirado(self):
+        # aqui defino el tiempo de expiración
+        tiempo_expiracion = timedelta(minutes=5)
+        return timezone.now() > (self.creado_en + tiempo_expiracion)

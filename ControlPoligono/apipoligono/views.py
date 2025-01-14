@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import (Usuario,Arma,PoligonoTiro,LeccionTiro,FraccionTiro,ResultadoTiro)
 from .serializers import (UsuarioSerializer,ArmaSerializer,PoligonoTiroSerializer,LeccionTiroSerializer,FraccionTiroSerializer,ResultadoTiroSerializer, RUTAuthTokenSerializer)
+from .utils.recuperacion_utilidades import iniciar_recuperacion, crea_codigo, cambiar_contrasena, comprobar_codigo
 
 
 # ModelViewSet para cada modelo
@@ -127,3 +128,5 @@ class LogoutView(APIView):
             return Response({'detail': 'Desconectado satisfactoriamente.'}, status=status.HTTP_200_OK)
         except Token.DoesNotExist:
             return Response({'detail': 'Token Invalido.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        

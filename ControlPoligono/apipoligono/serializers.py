@@ -64,3 +64,6 @@ class RUTAuthTokenSerializer(serializers.Serializer):
 
         attrs['user'] = user
         return attrs
+    
+class RecuperacionSerializer(serializers.Serializer):
+    rut = serializers.CharField(max_length=12)

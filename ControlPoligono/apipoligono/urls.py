@@ -8,7 +8,12 @@ from .views import (UsuarioViewSet,
                     ResultadoTiroViewSet,
                     RUTAuthTokenView,
                     LogoutView,
-                    ProtectedView)
+                    ProtectedView,
+                    iniciar_recuperacion,
+                    crea_codigo,
+                    comprobar_codigo,
+                    cambiar_contrasena
+                    )
 
 
 # Crear un router para los ViewSets
@@ -27,4 +32,14 @@ urlpatterns = [
     path('api-token-auth/', RUTAuthTokenView.as_view(), name='api_token_auth'),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('protected/', ProtectedView.as_view(), name='protected'),
+    
+    # URLs para recuperación de contraseña
+    #Primera solicitud solo con el rut
+    path('recuperar/', iniciar_recuperacion, name='iniciar_recuperacion'),
+    # Segunda solicitud con el rut y el correo
+    path('recuperar/crear/', crea_codigo, name='crea_codigo'),
+    # Segunda solicitud con el rut y el correo
+    path('recuperar/comprobar/', comprobar_codigo, name='comprobar_codigo'),
+    # Tercera solicitud con el digito verificador y la nueva contraseña
+    path('recuperar/cambiar/', cambiar_contrasena, name='cambiar_contrasena'),
 ]
