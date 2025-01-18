@@ -8,7 +8,10 @@ class RUTAuthBackend(BaseBackend):
             user = User.objects.get(rut=rut)
             if user.check_password(password):
                 return user
+            else:
+                print("Contraseña incorrecta para RUT: {rut}")
         except User.DoesNotExist:
+            print(f"Usuario con RUT: {rut} no encontrado ")
             return None
 
     def get_user(self, user_id):

@@ -8,9 +8,16 @@ from .models import (Usuario,
                      ResultadoTiro)
 
 class UsuarioSerializer(serializers.ModelSerializer):
+    habilitado = serializers.SerializerMethodField()
     class Meta:
         model = Usuario
-        fields = ('id_usuario','rut', 'grado', 'nombre', 'apellido_paterno', 'apellido_materno', 'unidad_regimentaria', 'unidad_combate', 'unidad_fundamental','correo', 'rol')
+        fields = ('id_usuario','rut', 'grado', 'nombre', 'apellido_paterno',
+                  'apellido_materno', 'unidad_regimentaria', 'unidad_combate',
+                  'unidad_fundamental','correo', 'rol', 'habilitado')
+        
+    def get_habilitado(self, obj):
+        # Verificar si el usuario tiene una contraseña asignada
+        return bool(obj.password)
 
     def create(self, validated_data):
         # Asignar rut como username
@@ -56,7 +63,7 @@ class RUTAuthTokenSerializer(serializers.Serializer):
             user = authenticate(request=self.context.get('request'), rut=rut, password=password)
 
             if not user:
-                msg = 'Unable to log in with provided credentials.'
+                msg = f'Unable to log in with provided credentials.'
                 raise serializers.ValidationError(msg, code='authorization')
         else:
             msg = 'Must include "rut" and "password".'

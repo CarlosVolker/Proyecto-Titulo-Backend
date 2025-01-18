@@ -1,5 +1,5 @@
 import random
-from django.contrib.auth.hashers import make_password
+from django.contrib.auth.hashers import make_password, PBKDF2PasswordHasher
 from django.core.mail import send_mail
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
@@ -28,7 +28,8 @@ def obtener_usuario_por_rut(rut):
 def enviar_codigo_verificador(correo, codigo):
     send_mail(
         'Código de verificación',
-        f'Su código de verificación es: {codigo}',
+        f'Su código de verificación es: {codigo}\
+            escribelo para que te cresca el pelo',
         'carlos_volkerdev@gmail.com',
         [correo],
         fail_silently=False
@@ -73,7 +74,6 @@ def crea_codigo(request):
 # Verifica si el codigo es correcto o a expirado
 @api_view(['POST'])
 def comprobar_codigo(request):
-    #if request.method == 'POST':
     rut = request.data.get('rut')
     codigo = request.data.get('codigo')
     # Obtengo el usuario con el rut
@@ -97,11 +97,14 @@ def comprobar_codigo(request):
 def cambiar_contrasena(request):
     # Recibe el rut, el digito verificador y la nueva contraseña
     rut = request.data.get('rut')
+    
     nueva_contrasena = request.data.get('nueva_contrasena')
     # Busca el usuario por el rut
     usuario = obtener_usuario_por_rut(rut)
     
+    # Busca el codigo de recuperacion en la BD    
     codigo_obj = CodigoRecuperacion.objects.filter(usuario=usuario).first()
+
     if not codigo_obj:
         return JsonResponse({'mensaje': 'No existe un código de verificación válido para este usuario'}, status=400)
     

@@ -35,6 +35,7 @@ ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 # Application definition
 
 INSTALLED_APPS = [
+    'rest_framework',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -42,7 +43,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'apipoligono',
-    'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
 ]
@@ -178,5 +178,12 @@ EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 # Configuración para autenticación con RUT
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',  # Mantén el backend predeterminado
-    'apipoligono.backends.RUTAuthBackend',  # Agrega tu backend personalizado
+    'apipoligono.backends.RUTAuthBackend',# Agrega tu backend personalizado
 ]
+
+""" PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',  # Esta es la opción predeterminada para Django 3.2+
+    'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
+    'django.contrib.auth.hashers.Argon2PasswordHasher',
+    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
+] """

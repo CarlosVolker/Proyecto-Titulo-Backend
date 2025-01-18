@@ -25,6 +25,7 @@ class Usuario(AbstractUser):
     correo = models.EmailField(max_length=100, null=True, blank=True)
     grado = models.CharField(max_length=50, null=True, blank=True) 
     
+    
     def tiene_rol(self, rol):
         return self.rol == rol
     
