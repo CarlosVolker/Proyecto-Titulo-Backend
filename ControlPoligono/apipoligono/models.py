@@ -90,8 +90,7 @@ class FraccionTiro(models.Model):
             #models.UniqueConstraint(fields=['id_leccion', 'tiradores_totales'], name='unique_leccion_tiradores'),
             models.UniqueConstraint(fields=['id_leccion', 'numero_fraccion'], name='unique_leccion_numero_fraccion')
         ]
-        
-        
+             
     def __str__(self):
         return f"Lección: {self.id_leccion.id_leccion} - Cantidad Tiradores: {self.tiradores_totales}"
 
