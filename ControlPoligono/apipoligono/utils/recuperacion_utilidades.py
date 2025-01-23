@@ -1,5 +1,5 @@
 import random
-from django.contrib.auth.hashers import make_password, PBKDF2PasswordHasher
+from django.contrib.auth.hashers import make_password
 from django.core.mail import send_mail
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
@@ -8,8 +8,6 @@ from datetime import timedelta
 from django.utils.timezone import now
 from rest_framework.decorators import api_view
 from ..serializers import RecuperacionSerializer
-
-
 
 #Genera código de longitud 6
 def generar_codigo_verificador():

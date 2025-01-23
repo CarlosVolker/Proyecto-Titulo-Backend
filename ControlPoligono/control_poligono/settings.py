@@ -158,6 +158,9 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
     ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
 }
 
 #Direcciones de donde vienen las peticiones (frontend)
@@ -165,6 +168,11 @@ CORS_ALLOWED_ORIGINS = [
     "http://192.168.1.86:5173",
     "http://localhost:5173",
     "http://127.0.0.1:5173"
+]
+
+CORS_ALLOWED_HEADERS = [
+    'Content-Type',
+    'Authorization',
 ]
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -180,10 +188,3 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',  # Mantén el backend predeterminado
     'apipoligono.backends.RUTAuthBackend',# Agrega tu backend personalizado
 ]
-
-""" PASSWORD_HASHERS = [
-    'django.contrib.auth.hashers.PBKDF2PasswordHasher',  # Esta es la opción predeterminada para Django 3.2+
-    'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
-    'django.contrib.auth.hashers.Argon2PasswordHasher',
-    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
-] """

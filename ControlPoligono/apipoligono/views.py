@@ -2,6 +2,7 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authtoken.models import Token
+from django.contrib.auth.hashers import make_password
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import (Usuario,Arma,PoligonoTiro,LeccionTiro,FraccionTiro,ResultadoTiro)
@@ -15,18 +16,57 @@ from .utils.recuperacion_utilidades import iniciar_recuperacion, crea_codigo, ca
 class UsuarioViewSet(viewsets.ModelViewSet):
     queryset = Usuario.objects.all()
     serializer_class = UsuarioSerializer
-"""     permission_classes = [IsAuthenticated]
- """
+    permission_classes = [IsAuthenticated]
+    
+    @action(detail=True, methods=['post'], url_path='cambiar-contrasena')
+    def cambiar_contrasena(self, request, pk=None):
+        user = self.get_object()
+        old_password = request.data.get('old_password')
+        new_password = request.data.get('new_password')
+        
+        # Validad contraseña actual
+        if not user.check_password(old_password):
+            return Response({'error': 'Contraseña actual incorrecta'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Validar nueva contraseña (opcional: longitud, 6 minimo)
+        if len(new_password) < 6:
+            return Response({'error': 'La contraseña debe tener al menos 6 caracteres'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Cifrar y actualizar la contraseña
+        user.password = make_password(new_password)
+        user.save()
+        
+        return Response({'detail': 'Contraseña actualizada correctamente'}, status=status.HTTP_200_OK)
+
 class ArmaViewSet(viewsets.ModelViewSet):
     queryset = Arma.objects.all()
     serializer_class = ArmaSerializer
-"""     permission_classes = [IsAuthenticated]
- """
+    permission_classes = [IsAuthenticated]
+ 
+    def crear_arma(request):
+        numero_serie = request.data.get('numero_serie')
+        
+        #Verificar si el arma ya existe
+        arma_existente = Arma.objects.filter(numero_serie=numero_serie).first()
+        
+        if arma_existente:
+            #Retornar arma existente
+            serializer = ArmaSerializer(arma_existente)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        # Si no existe, crea un arma
+        serializer = ArmaSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
     
 class PoligonoTiroViewSet(viewsets.ModelViewSet):
     queryset = PoligonoTiro.objects.all()
     serializer_class = PoligonoTiroSerializer
-    #permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
  
     @action(detail=True, methods=['get'])
     def lecciones(self, request, pk=None):
@@ -38,7 +78,7 @@ class PoligonoTiroViewSet(viewsets.ModelViewSet):
 class LeccionTiroViewSet(viewsets.ModelViewSet):
     queryset = LeccionTiro.objects.all()
     serializer_class = LeccionTiroSerializer
-    #permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
      
     @action(detail=True, methods=['get'])
     def fracciones(self, request, pk=None):
@@ -50,7 +90,7 @@ class LeccionTiroViewSet(viewsets.ModelViewSet):
 class FraccionTiroViewSet(viewsets.ModelViewSet):
     queryset = FraccionTiro.objects.all()
     serializer_class = FraccionTiroSerializer
-    #permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     
     @action(detail=True, methods=['get'])
     def tiradores(self, request, pk=None):
@@ -93,8 +133,7 @@ class FraccionTiroViewSet(viewsets.ModelViewSet):
 class ResultadoTiroViewSet(viewsets.ModelViewSet):
     queryset = ResultadoTiro.objects.all()
     serializer_class = ResultadoTiroSerializer
-"""     permission_classes = [IsAuthenticated]
- """    
+    permission_classes = [IsAuthenticated]
     
 class ProtectedView(APIView):
     permission_classes = [IsAuthenticated]
@@ -128,5 +167,4 @@ class LogoutView(APIView):
             return Response({'detail': 'Desconectado satisfactoriamente.'}, status=status.HTTP_200_OK)
         except Token.DoesNotExist:
             return Response({'detail': 'Token Invalido.'}, status=status.HTTP_400_BAD_REQUEST)
-        
         
