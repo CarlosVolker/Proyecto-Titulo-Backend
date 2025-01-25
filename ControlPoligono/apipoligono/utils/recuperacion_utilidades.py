@@ -1,4 +1,5 @@
 import random
+from rest_framework.decorators import permission_classes
 from django.contrib.auth.hashers import make_password
 from django.core.mail import send_mail
 from django.http import JsonResponse
@@ -8,6 +9,7 @@ from datetime import timedelta
 from django.utils.timezone import now
 from rest_framework.decorators import api_view
 from ..serializers import RecuperacionSerializer
+from rest_framework.permissions import AllowAny
 
 #Genera código de longitud 6
 def generar_codigo_verificador():
@@ -36,6 +38,7 @@ def enviar_codigo_verificador(correo, codigo):
 # Creacion de funcion solo para que devuelva el correo censurado.
 # Lo hice en el backend y no en el fontend, para que no se pueda capturar el correo real.
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def iniciar_recuperacion(request):
     # Recibe el rut del usuario
     serializer = RecuperacionSerializer(data=request.data)
@@ -49,7 +52,8 @@ def iniciar_recuperacion(request):
 
       
 # Funcion que crea el codigo de verificacion y lo envia al correo del usuario
-@api_view(['POST'])  
+@api_view(['POST']) 
+@permission_classes([AllowAny]) 
 def crea_codigo(request):
     rut = request.data.get('rut')
     correo = request.data.get('correo')
@@ -71,6 +75,7 @@ def crea_codigo(request):
  
 # Verifica si el codigo es correcto o a expirado
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def comprobar_codigo(request):
     rut = request.data.get('rut')
     codigo = request.data.get('codigo')
@@ -91,7 +96,8 @@ def comprobar_codigo(request):
  
 # Cambia la contraseña del usuario despues de verificar el RUT y la existencia
 #del codigo de recuperacion
-@api_view(['POST'])    
+@api_view(['POST'])   
+@permission_classes([AllowAny]) 
 def cambiar_contrasena(request):
     # Recibe el rut, el digito verificador y la nueva contraseña
     rut = request.data.get('rut')

@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 from decouple import config
+import dj_database_url
+import os
 
 print(config('EMAIL_HOST'))
 print(config('EMAIL_HOST_USER'))
@@ -29,7 +31,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", 'poligono-tiro.onrender.com', '192.168.1.86']
 
 
 # Application definition
@@ -105,6 +107,11 @@ DATABASES = {
     }
 }
 
+# Conexión base de datos
+""" DATABASES = {
+    'default': dj_database_url.config(default=os.getenv('DATABASE_URL'))
+} """
+
 #Para añadir atributos a los usuarios
 AUTH_USER_MODEL = 'apipoligono.Usuario'
 
@@ -154,13 +161,13 @@ REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
         'rest_framework.renderers.BrowsableAPIRenderer',  # Permite interfaz web de formularios
-    ],
+     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
-    ],
+    ], 
 }
 
 #Direcciones de donde vienen las peticiones (frontend)
