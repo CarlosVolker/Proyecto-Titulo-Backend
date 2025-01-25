@@ -108,9 +108,9 @@ DATABASES = {
 }
 
 # Conexión base de datos
-""" DATABASES = {
-    'default': dj_database_url.config(default=os.getenv('DATABASE_URL'))
-} """
+DATABASES = {
+    'default': dj_database_url.config(default=config('DATABASE_URL'))
+}
 
 #Para añadir atributos a los usuarios
 AUTH_USER_MODEL = 'apipoligono.Usuario'
@@ -151,6 +151,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
