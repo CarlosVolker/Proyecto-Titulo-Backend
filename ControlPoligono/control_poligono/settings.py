@@ -173,9 +173,7 @@ REST_FRAMEWORK = {
 
 #Direcciones de donde vienen las peticiones (frontend)
 CORS_ALLOWED_ORIGINS = [
-    "http://192.168.1.86:5173",
-    "http://localhost:5173",
-    "http://127.0.0.1:5173"
+    "https://control-poligono.netlify.app"
 ]
 
 CORS_ALLOWED_HEADERS = [
