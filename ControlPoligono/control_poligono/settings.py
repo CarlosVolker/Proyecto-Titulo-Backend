@@ -31,7 +31,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", 'poligono-tiro.onrender.com', '192.168.1.86']
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", 'proyecto-titulo-backend.onrender.com', '192.168.1.86']
 
 
 # Application definition
