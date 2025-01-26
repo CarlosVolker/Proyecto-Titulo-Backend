@@ -21,16 +21,20 @@ class UsuarioViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['post'], url_path='cambiar-contrasena')
     def cambiar_contrasena(self, request, pk=None):
         user = self.get_object()
-        old_password = request.data.get('old_password')
+        old_password = request.data.get('old_password', None)
         new_password = request.data.get('new_password')
         
-        # Validad contraseña actual
-        if not user.check_password(old_password):
-            return Response({'error': 'Contraseña actual incorrecta'}, status=status.HTTP_400_BAD_REQUEST)
+        #Validar que la nueva contraseña esté presente
+        if not new_password:
+            return Response({'error': 'La nueva contraseña es requerida'}, status=status.HTTP_400_BAD_REQUEST)
         
         # Validar nueva contraseña (opcional: longitud, 6 minimo)
         if len(new_password) < 6:
             return Response({'error': 'La contraseña debe tener al menos 6 caracteres'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Validad contraseña actual
+        if not user.check_password(old_password):
+            return Response({'error': 'Contraseña actual incorrecta'}, status=status.HTTP_400_BAD_REQUEST)
         
         # Cifrar y actualizar la contraseña
         user.password = make_password(new_password)
