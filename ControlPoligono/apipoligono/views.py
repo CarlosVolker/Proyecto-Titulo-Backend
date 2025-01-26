@@ -33,8 +33,9 @@ class UsuarioViewSet(viewsets.ModelViewSet):
             return Response({'error': 'La contraseña debe tener al menos 6 caracteres'}, status=status.HTTP_400_BAD_REQUEST)
         
         # Validad contraseña actual
-        if not user.check_password(old_password):
-            return Response({'error': 'Contraseña actual incorrecta'}, status=status.HTTP_400_BAD_REQUEST)
+        if old_password is not None:
+            if not user.check_password(old_password):
+                return Response({'error': 'Contraseña actual incorrecta'}, status=status.HTTP_400_BAD_REQUEST)
         
         # Cifrar y actualizar la contraseña
         user.password = make_password(new_password)
