@@ -92,6 +92,65 @@ class LeccionTiroViewSet(viewsets.ModelViewSet):
         serializer = FraccionTiroSerializer(fracciones, many=True)
         return Response(serializer.data)
     
+    @action(detail=True, methods=['get'], url_path='usuarios')
+    def usuarios_listar(self, request, pk=None):
+        #Obtener leccion
+        leccion = self.get_object()
+        
+        # Obtener todas las fracciones asociadas a la leccion
+        fracciones = FraccionTiro.objects.filter(id_leccion=leccion)
+        
+        # Obtener los tiradores/usuarios en esas fracciones
+        resultados = ResultadoTiro.objects.filter(id_fraccion__in=fracciones)
+        usuarios = Usuario.objects.filter(id_usuario__in=resultados.values('id_usuario'))
+        
+        # Serializar los usuarios
+        serializer = UsuarioSerializer(usuarios, many=True)
+        
+        # Retorna la lista de usuarios
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    @action(detail=True, methods=['get'], url_path='resultados')
+    def resultados(self, request, pk=None):
+        #Obtener leccion
+        leccion = self.get_object()
+        
+        # Obtener todas las fracciones asociadas a la leccion
+        fracciones = FraccionTiro.objects.filter(id_leccion=leccion)
+        
+        # Filtrar los resultados de tiro asociados a las fracciones
+        resultados = ResultadoTiro.objects.filter(id_fraccion__in=fracciones)
+        
+        # Realizar los JOINs con los usuario, Arma y FraccionTiro
+        data = []
+        for resultado in resultados:
+            usuario = Usuario.objects.get(id_usuario=resultado.id_usuario.id_usuario)
+            arma = Arma.objects.get(id_arma=resultado.id_arma.id_arma)
+            fraccion = FraccionTiro.objects.get(id_fraccion=resultado.id_fraccion.id_fraccion)
+            
+            # Diccionario de datos
+            data.append({
+                'RUT': usuario.rut,
+                'Grado': usuario.grado,
+                'Apellido_paterno': usuario.apellido_paterno,
+                'Apellido_materno': usuario.apellido_materno,
+                'Nombre': usuario.nombre,
+                'Unidad Regimentaria': usuario.unidad_regimentaria,
+                'Unidad de Combate': usuario.unidad_combate,
+                'Unidad Fundamental': usuario.unidad_fundamental,
+                'Tipo Arma': arma.tipo_arma,
+                'Modelo de Arma': arma.modelo_arma,
+                'Número de Serie': arma.numero_serie,
+                'Carril': resultado.numero_carril,
+                'Tiros Acertados': resultado.tiros_acertados,
+                'Total Tiros': resultado.total_tiros,
+            })
+            
+        # Retornar la lista de resultados
+        return Response(data, status=status.HTTP_200_OK)
+    
+    
+    
 class FraccionTiroViewSet(viewsets.ModelViewSet):
     queryset = FraccionTiro.objects.all()
     serializer_class = FraccionTiroSerializer
